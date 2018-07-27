@@ -1,10 +1,11 @@
+
+<script type="text/javascript">
 // https://community.unbounce.com/t/how-to-run-custom-code-scripts-on-form-submission/5079
 //
 // Key things to set up in this script:
 // 1. Make sure the name of the form is correct when setting "sform"
 // 2. Make sure the name of the button is correct when setting submit button 
 //
-<script type="text/javascript">
 function yourSubmitFunction(e, $) {
   e.preventDefault();
   try {
