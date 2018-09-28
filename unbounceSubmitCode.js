@@ -1,4 +1,5 @@
-
+// Sep 28 2018 mods by bill roth
+//
 <script type="text/javascript">
 // https://community.unbounce.com/t/how-to-run-custom-code-scripts-on-form-submission/5079
 //
@@ -9,8 +10,9 @@
 function yourSubmitFunction(e, $) {
   e.preventDefault();
   try {
+    console.log("inside try");
     // collapse fields into var
-    var sform =  $("#lp-pom-form-80").find("form"); // make sure to check this in new pages
+    var sform =  $("#lp-pom-form-80").find("form");
     var vals = sform.serializeArray().reduce(function (obj, item) {
         obj[item.name] = item.value;
         return obj;
@@ -41,7 +43,7 @@ function yourSubmitFunction(e, $) {
           "email": vals.email
         };
 
-        var submitBtn = $('#lp-pom-button-81'); // make sure this is correct
+        var submitBtn = $('#lp-pom-button-81');
         var origText = submitBtn.text();
         submitBtn.text("PLEASE WAIT");
         submitBtn.attr({ "disabled": true });
@@ -53,7 +55,13 @@ function yourSubmitFunction(e, $) {
           headers: {"Host" : "www.wavefront.com", 
                     "Origin" : "https://go.wavefront.com"},
           data : formData,
-          success: function (response) {
+          success: function (response, textStatus, jqXHR ) {
+              if(response === null) {
+                console.log("Null response");
+                throw "Null response from service";
+                return false;
+              }
+              console.log(response);
           	  response1 = JSON.parse(response);
          	  body = JSON.parse(response1.data.body);
         	  submitBtn.text(origText);
@@ -67,34 +75,32 @@ function yourSubmitFunction(e, $) {
             	alert('An unexpected error occurred during the form submission =(');
             	return false;
           	  }
-              // 
+            
+              // (document.form[0]).off('submit');
               $('#invitecode').val(body.response.inviteCode);
               gaForm(e);
-          } // end of success function
+              lp.jQuery('.lp-pom-form form').submit();
+            
+          }, // end of success function
+          error: function (response,errortext,errorthrown) {
+                 console.log(response);
+                 console.log(errortext);
+                 console.log(errorthrown);
+          }
         }); // end of $ajax call 
   } // end try block
   catch(err) {
     //code to handle errors. console.log is just an example
     console.log(err);
-    ga('send', 'event', 'Unbounce', 'fail-catch-error', 'self-service-trial-fail');
     return false;
   } 
   finally {
 // This submits the form. If your code is asynchronous, add to callback instead
     // not sure I need this.
   }
-return false;
+  return false;
 } // end of yourSubmitFunction
 
-lp.jQuery(function($) {
-  $('.lp-pom-form .lp-pom-button').unbind('click tap touchstart').bind('click.formSubmit', function(e) {
-    if ( $('.lp-pom-form form').valid() ) yourSubmitFunction(e, $);
-  });
-  $('form').unbind('keypress').bind('keypress.formSubmit', function(e) {
-    if(e.which === 13 && e.target.nodeName.toLowerCase() !== 'textarea' && $('.lp-pom-form form').valid() )
-      yourSubmitFunction(e, $);
-  });
-});
 //ga form submission event
 function gaForm(event) {
   var $form, $formContainer, params;
@@ -103,8 +109,22 @@ function gaForm(event) {
   $formContainer = lp.jQuery(event.currentTarget).closest('.lp-pom-form');
   $form = $formContainer.children('form');
   if ($form.valid()) {
+    console.log("calling form.submit");
     return $form.submit();
-    }
-  }
+    } else {
+      console.log("Form not valid");
+    } 
+}
 
+lp.jQuery(window).load(function(){
+ lp.jQuery(function($) {
+   $('.lp-pom-form .lp-pom-button').unbind('click tap touchstart').bind('click.formSubmit tap.formSubmit touchstart.formSubmit', function(e) {
+     if ( $('.lp-pom-form form').valid() ) yourSubmitFunction(e, $);
+   });
+   $('form').unbind('keypress').bind('keypress.formSubmit', function(e) {
+     if(e.which === 13 && e.target.nodeName.toLowerCase() !== 'textarea' && $('.lp-pom-form form').valid() )
+       yourSubmitFunction(e, $);
+   });
+ });
+});
 </script>
