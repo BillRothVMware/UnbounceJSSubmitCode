@@ -83,6 +83,7 @@ function yourSubmitFunction(e, $) {
 // This submits the form. If your code is asynchronous, add to callback instead
     // not sure I need this.
   }
+return false;
 } // end of yourSubmitFunction
 
 lp.jQuery(function($) {
