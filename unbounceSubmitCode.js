@@ -1,6 +1,7 @@
+
+<script type="text/javascript">
 // Sep 28 2018 mods by bill roth
 //
-<script type="text/javascript">
 // https://community.unbounce.com/t/how-to-run-custom-code-scripts-on-form-submission/5079
 //
 // Key things to set up in this script:
